@@ -81,7 +81,7 @@ if archivo_registros_presencia is not None:
 
     # Tabla de registros de presencia
     st.header('Registros de presencia')
-    st.dataframe(registros_presencia[['species', 'stateProvince', 'locality','eventDate']].rename(columns = {'species':'Especie', 'stateProvince':'Provincia', 'locality':'Localidad', 'evenDate':'Fecha'}))
+    st.dataframe(registros_presencia[['species', 'stateProvince', 'locality','eventDate']].rename(columns = {'species':'Especie', 'stateProvince':'Provincia', 'locality':'Localidad', 'eventDate':'Fecha'}))
 
 
     # Definición de columnas
@@ -97,7 +97,7 @@ if archivo_registros_presencia is not None:
                     labels={'stateProvince':'Provincia', 'value':'Registros de presencia'})
         st.plotly_chart(fig)
 
-    with col2:
+    with col1:
         # Gráficos de histor
         st.header('Historial de')
         registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['eventDate'].dt.year).count().eventDate)
