@@ -45,7 +45,7 @@ if archivo_registros_presencia is not None:
                                            crs='EPSG:4326')
 
     # Carga de polígonos de ASP
-    asp = gpd.read_file("datos/asp.geojson")
+    asp = gpd.read_file("datos/ASP.geojson")
 
     # Limpieza de datos
     # Eliminación de registros con valores nulos en la columna 'species'
