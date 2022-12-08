@@ -100,7 +100,7 @@ if archivo_registros_presencia is not None:
     with col1:
         # Gráficos de histor
         st.header('Historial de')
-        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['eventDate'].dt.year).count().eventDate)
+        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['locality']).count().eventDate)
         registros_presencia_grp_anio.columns = ['registros_presencia']
 
         fig = px.bar(registros_presencia_grp_anio, 
