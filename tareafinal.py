@@ -125,7 +125,7 @@ if archivo_registros_presencia is not None:
         for idx, row in registros_presencia.iterrows():
             if not math.isnan(row['decimalLongitude']) and not math.isnan(row['decimalLatitude']):
                 mc.add_child(Marker([row['decimalLatitude'], row['decimalLongitude']], 
-                                    popup=row['species']))
+                                    popup=row['species', 'locality','stateProvince', 'eventDate']))
         m.add_child(mc)
         # Capa de coropletas
         folium.Choropleth(
@@ -153,7 +153,8 @@ if archivo_registros_presencia is not None:
             line_opacity=1,
             legend_name='Cantidad de registros de presencia',
             smooth_factor=0).add_to(m)
+        
         # Control de capas
         folium.LayerControl().add_to(m)    
         # Despliegue del mapa
-        folium_static(m)
+        m 
