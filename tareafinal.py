@@ -81,7 +81,7 @@ if archivo_registros_presencia is not None:
 
     # Tabla de registros de presencia
     st.header('Registros de presencia')
-    st.dataframe(registros_presencia[['family', 'species', 'eventDate', 'locality', 'occurrenceID']].rename(columns = {'family':'Familia', 'species':'Especie', 'eventDate':'Fecha', 'locality':'Localidad', 'occurrenceID':'Origen del dato'}))
+    st.dataframe(registros_presencia[['species', 'stateProvince', 'locality','eventDate']].rename(columns = {'species':'Especie', 'stateProvince':'Provincia', 'locality':'Localidad', 'evenDate':'Fecha'}))
 
 
     # Definición de columnas
@@ -90,6 +90,16 @@ if archivo_registros_presencia is not None:
     with col1:
         # Gráficos de historial de registros de presencia por año
         st.header('Historial de registros por año')
+        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['stateProvince']).count().eventDate)
+        registros_presencia_grp_anio.columns = ['registros_presencia']
+
+        fig = px.bar(registros_presencia_grp_anio, 
+                    labels={'stateProvince':'Provincia', 'value':'Registros de presencia'})
+        st.plotly_chart(fig)
+
+    with col2:
+        # Gráficos de histor
+        st.header('Historial de')
         registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['eventDate'].dt.year).count().eventDate)
         registros_presencia_grp_anio.columns = ['registros_presencia']
 
@@ -97,41 +107,6 @@ if archivo_registros_presencia is not None:
                     labels={'eventDate':'Año', 'value':'Registros de presencia'})
         st.plotly_chart(fig)
 
-    with col2:
-        # Gráficos de estacionalidad de registros de presencia por mes
-        st.header('Estacionalidad de registros por mes')
-        registros_presencia_grp_mes = pd.DataFrame(registros_presencia.groupby(registros_presencia['eventDate'].dt.month).count().eventDate)
-        registros_presencia_grp_mes.columns = ['registros_presencia']
-
-        fig = px.area(registros_presencia_grp_mes, 
-                    labels={'eventDate':'Mes', 'value':'Registros de presencia'})
-        st.plotly_chart(fig)      
-
-
-    # Gráficos de cantidad de registros de presencia por ASP
-    # "Join" para agregar la columna con el conteo a la capa de ASP
-    asp_registros = asp_registros.join(asp.set_index('codigo'), on='codigo', rsuffix='_b')
-    # Dataframe filtrado para usar en graficación
-    asp_registros_grafico = asp_registros.loc[asp_registros['cantidad_registros_presencia'] > 0, 
-                                                            ["nombre_asp", "cantidad_registros_presencia"]].sort_values("cantidad_registros_presencia", ascending=[False]).head(15)
-    asp_registros_grafico = asp_registros_grafico.set_index('nombre_asp')  
-
-    with col1:
-        st.header('Cantidad de registros por ASP')
-
-        fig = px.bar(asp_registros_grafico, 
-                    labels={'nombre_asp':'ASP', 'cantidad_registros_presencia':'Registros de presencia'})
-        st.plotly_chart(fig)    
-
-    with col2:        
-        # st.subheader('px.pie()')        
-        st.header('Porcentaje de registros por ASP')
-        
-        fig = px.pie(asp_registros_grafico, 
-                    names=asp_registros_grafico.index,
-                    values='cantidad_registros_presencia')
-        fig.update_traces(textposition='inside', textinfo='percent+label')
-        st.plotly_chart(fig)    
 
 
     with col1:
