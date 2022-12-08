@@ -144,7 +144,7 @@ if archivo_registros_presencia is not None:
         HeatMap(data=registros_presencia[['decimalLatitude', 'decimalLongitude']],
                 name='Mapa de calor').add_to(m)
         # Capa de ASP
-        folium.GeoJson(data=asp, name='ASP').add_to(m)
+        folium.GeoJson(data=asp, name='asp').add_to(m)
         # Capa de registros de presencia agrupados
         mc = MarkerCluster(name='Registros agrupados')
         for idx, row in registros_presencia.iterrows():
@@ -157,7 +157,7 @@ if archivo_registros_presencia is not None:
         # Despliegue del mapa
         folium_static(m)
 
-    with col2:
+    with col1:
         # Mapa de coropletas de registros de presencia en ASP
         st.header('Mapa de cantidad de registros en ASP')
 
