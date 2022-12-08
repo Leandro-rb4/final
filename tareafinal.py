@@ -157,4 +157,4 @@ if archivo_registros_presencia is not None:
         # Control de capas
         folium.LayerControl().add_to(m)    
         # Despliegue del mapa
-        m 
+        folium(m) 
