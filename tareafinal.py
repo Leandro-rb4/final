@@ -115,7 +115,14 @@ if archivo_registros_presencia is not None:
         # Capa base
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
         folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain').add_to(m)
+        # Control de capas
+        folium.LayerControl().add_to(m)    
+        # Despliegue del mapa
+        folium_static(m)
+
         # Capa de calor
+        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
+
         HeatMap(data=registros_presencia[['decimalLatitude', 'decimalLongitude']],
                 name='Mapa de calor').add_to(m)
         # Capa de ASP
@@ -127,34 +134,48 @@ if archivo_registros_presencia is not None:
                 mc.add_child(Marker([row['decimalLatitude'], row['decimalLongitude']], 
                                     popup=row['species']))
         m.add_child(mc)
-        # Capa de coropletas
-        folium.Choropleth(
-            name="Cantidad de registros en ASP",
-            geo_data=asp,
-            data=asp_registros,
-            columns=['codigo', 'cantidad_registros_presencia'],
-            bins=8,
-            key_on='feature.properties.codigo',
-            fill_color='Reds', 
-            fill_opacity=0.5, 
-            line_opacity=1,
-            legend_name='Cantidad de registros de presencia',
-            smooth_factor=0).add_to(m)
-        # Capa de coropletas numero 2
-        folium.Choropleth(
-            name="Cantidad de registros en ASP",
-            geo_data=asp,
-            data=asp_registros,
-            columns=['codigo', 'cantidad_registros_presencia'],
-            bins=8,
-            key_on='feature.properties.codigo',
-            fill_color='Reds', 
-            fill_opacity=0.5, 
-            line_opacity=1,
-            legend_name='Cantidad de registros de presencia',
-            smooth_factor=0).add_to(m)
-        
         # Control de capas
         folium.LayerControl().add_to(m)    
         # Despliegue del mapa
-        folium_static(m) 
+        folium_static(m)
+
+
+        # Capa de coropletas
+        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
+        folium.Choropleth(
+            name="Cantidad de registros en ASP",
+            geo_data=asp,
+            data=asp_registros,
+            columns=['codigo', 'cantidad_registros_presencia'],
+            bins=8,
+            key_on='feature.properties.codigo',
+            fill_color='Reds', 
+            fill_opacity=0.5, 
+            line_opacity=1,
+            legend_name='Cantidad de registros de presencia',
+            smooth_factor=0).add_to(m)
+        # Control de capas
+        folium.LayerControl().add_to(m)    
+        # Despliegue del mapa
+        folium_static(m)
+
+
+
+        # Capa de coropletas numero 2
+        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
+        folium.Choropleth(
+            name="Cantidad de registros en ASP",
+            geo_data=asp,
+            data=asp_registros,
+            columns=['codigo', 'cantidad_registros_presencia'],
+            bins=8,
+            key_on='feature.properties.codigo',
+            fill_color='Reds', 
+            fill_opacity=0.5, 
+            line_opacity=1,
+            legend_name='Cantidad de registros de presencia',
+            smooth_factor=0).add_to(m)
+        # Control de capas
+        folium.LayerControl().add_to(m)    
+        # Despliegue del mapa
+        folium_static(m)
