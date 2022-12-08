@@ -125,7 +125,7 @@ if archivo_registros_presencia is not None:
         for idx, row in registros_presencia.iterrows():
             if not math.isnan(row['decimalLongitude']) and not math.isnan(row['decimalLatitude']):
                 mc.add_child(Marker([row['decimalLatitude'], row['decimalLongitude']], 
-                                    popup=row['species', 'locality','stateProvince', 'eventDate']))
+                                    popup=row['species']))
         m.add_child(mc)
         # Capa de coropletas
         folium.Choropleth(
