@@ -14,6 +14,8 @@ from folium import Marker
 from folium.plugins import MarkerCluster
 from folium.plugins import HeatMap
 from streamlit_folium import folium_static
+from streamlit_folium import st_folium
+
 
 import math
 
@@ -128,16 +130,9 @@ if archivo_registros_presencia is not None:
         # Mapa de calor y de registros agrupados
         st.header('Mapa de calor y de registros agrupados')
         # Capa base
-        m = folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain', zoom_start=8)
-        folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter').add_to(m)
-        # Control de capas
-        folium.LayerControl().add_to(m)    
-        # Despliegue del mapa
-        folium_static(m)
-
-    with col1:
-        # Mapa de calor
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
+        folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain', zoom_start=8).add_to(m)
+
 
         HeatMap(data=registros_presencia[['decimalLatitude', 'decimalLongitude']],
                 name='Mapa de calor').add_to(m)
