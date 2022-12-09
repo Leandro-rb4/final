@@ -104,8 +104,9 @@ if archivo_registros_presencia is not None:
         st.header('Cantidad de registros por ASP')
 
         fig = px.bar(asp_registros_grafico, 
-                    labels={'nombre_asp':'ASP', 'cantidad_registros_presencia':'Registros de presencia'})
+                    labels={'NPROVINCIA':'Provincia', 'cantidad_registros_presencia2':'Registros de presencia'})
         st.plotly_chart(fig) 
+
 
     # Gráficos de cantidad de registros de
     # "Join" para agregar la columna con el conteo a la capa de ASP
@@ -115,7 +116,7 @@ if archivo_registros_presencia is not None:
                                                             ["NCANTON", "cantidad_registros_presencia"]].sort_values("cantidad_registros_presencia")
     asp_registros_grafico = asp_registros_grafico.set_index('NCANTON')  
 
-    with col1:
+    with col2:
         st.header('Cantidad de registros po')
 
         fig = px.bar(asp_registros_grafico, 
@@ -126,11 +127,13 @@ if archivo_registros_presencia is not None:
 
 
 
-    with col1:
+
         # Mapa de calor y de registros agrupados
         st.header('Mapa de calor y de registros agrupados')
         # Capa base
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
+        folium.TileLayer(tiles='CartoDB positron', zoom_start=8).add_to(m)
+
         folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain', zoom_start=8).add_to(m)
 
 
@@ -142,22 +145,18 @@ if archivo_registros_presencia is not None:
         mc = MarkerCluster(name='Registros agrupados')
         for idx, row in registros_presencia.iterrows():
             if not math.isnan(row['decimalLongitude']) and not math.isnan(row['decimalLatitude']):
-                mc.add_child(Marker([row['decimalLatitude'], row['decimalLongitude']], 
-                                    popup=[row['species'], 
-                                    row['stateProvince'], 
-                                    row['locality'], 
-                                    row['eventDate']])).add_to(m)
+                        mc.add_child(Marker([row['decimalLatitude'], row['decimalLongitude']], 
+                            popup=[row['species'], 
+                            row['stateProvince'], 
+                            row['locality'], 
+                            row['eventDate']])).add_to(m)
         m.add_child(mc)
-        # Control de capas
-        folium.LayerControl().add_to(m)    
-        # Despliegue del mapa
-        folium_static(m)
 
-    with col1:
+
+
         # Mapa de coropletas
-        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
         folium.Choropleth(
-            name="Cantidad de registros en ASP",
+            name="Cantidad de registros en provincias",
             geo_data=asp,
             data=asp_registros2,
             columns=["PROV", 'cantidad_registros_presencia2'],
@@ -166,19 +165,10 @@ if archivo_registros_presencia is not None:
             fill_color='Reds', 
             fill_opacity=0.5, 
             line_opacity=1,
-            legend_name='Cantidad de registros de presencia',
-            smooth_factor=0).add_to(m)
-        # Control de capas
-        folium.LayerControl().add_to(m)    
-        # Despliegue del mapa
-        folium_static(m)
-
-
-    with col1:
+            legend_name='Cantidad de registros de presencia').add_to(m)
         # Mapa de coropletas numero 2
-        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
         folium.Choropleth(
-            name="Cantidad de registros en ASP",
+            name="Cantidad de registro",
             geo_data=asp,
             data=asp_registros,
             columns=['CANTO', 'cantidad_registros_presencia'],
@@ -187,8 +177,7 @@ if archivo_registros_presencia is not None:
             fill_color='Reds', 
             fill_opacity=0.5, 
             line_opacity=1,
-            legend_name='Cantidad de registros de presencia',
-            smooth_factor=0).add_to(m)
+            legend_name='Cantidad de registros en cantones').add_to(m)
         # Control de capas
         folium.LayerControl().add_to(m)    
         # Despliegue del mapa
