@@ -155,31 +155,31 @@ if archivo_registros_presencia is not None:
 
 
 
-        # Mapa de coropletas
-        folium.Choropleth(
-            name="Cantidad de registros en provincias",
-            geo_data=asp,
-            data=asp_registros2,
-            columns=["PROV", 'cantidad_registros_presencia2'],
-            bins=8,
-            key_on='feature.properties.PROV',
-            fill_color='Reds', 
-            fill_opacity=0.5, 
-            line_opacity=1,
-            legend_name='Cantidad de registros de presencia').add_to(m)
-        # Mapa de coropletas numero 2
-        folium.Choropleth(
-            name="Cantidad de registro",
-            geo_data=asp,
-            data=asp_registros,
-            columns=['CANTO', 'cantidad_registros_presencia'],
-            bins=8,
-            key_on='feature.properties.CANTO',
-            fill_color='Reds', 
-            fill_opacity=0.5, 
-            line_opacity=1,
-            legend_name='Cantidad de registros en cantones').add_to(m)
-        # Control de capas
-        folium.LayerControl().add_to(m)    
-        # Despliegue del mapa
-        folium_static(m)
+    # Mapa de coropletas
+    folium.Choropleth(
+        name="Cantidad de registros en provincias",
+        geo_data=asp,
+        data=asp_registros2,
+        columns=["PROV", 'cantidad_registros_presencia2'],
+        bins=8,
+        key_on='feature.properties.PROV',
+        fill_color='Reds', 
+        fill_opacity=0.5, 
+        line_opacity=1,
+        legend_name='Cantidad de registros de presencia').add_to(m)
+    # Mapa de coropletas numero 2
+    folium.Choropleth(
+        name="Cantidad de registro",
+        geo_data=asp,
+        data=asp_registros,
+        columns=['CANTO', 'cantidad_registros_presencia'],
+        bins=8,
+        key_on='feature.properties.CANTO',
+        fill_color='Reds', 
+        fill_opacity=0.5, 
+        line_opacity=1,
+        legend_name='Cantidad de registros en cantones').add_to(m)
+    # Control de capas
+    folium.LayerControl().add_to(m)    
+    # Despliegue del mapa
+    folium_static(m)
