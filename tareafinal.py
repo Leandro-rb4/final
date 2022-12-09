@@ -127,7 +127,7 @@ if archivo_registros_presencia is not None:
 
 
 
-    with col1:
+
         # Mapa de calor y de registros agrupados
         st.header('Mapa de calor y de registros agrupados')
         # Capa base
