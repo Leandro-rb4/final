@@ -45,7 +45,7 @@ if archivo_registros_presencia is not None:
                                            crs='EPSG:4326')
 
     # Carga de polígonos de ASP
-    asp = gpd.read_file("datos/ASP.geojson")
+    asp = gpd.read_file("datos/cantones.geojson")
 
     # Limpieza de datos
     # Eliminación de registros con valores nulos en la columna 'species'
@@ -70,10 +70,13 @@ if archivo_registros_presencia is not None:
     # Cálculo de la cantidad de registros en ASP
     # "Join" espacial de las capas de ASP y registros de presencia
     asp_contienen_registros = asp.sjoin(registros_presencia, how="left", predicate="contains")
+    asp_contienen_registros2 = asp.sjoin(registros_presencia, how="left", predicate="contains")
     # Conteo de registros de presencia en cada ASP
-    asp_registros = asp_contienen_registros.groupby("codigo").agg(cantidad_registros_presencia = ("gbifID","count"))
+    asp_registros = asp_contienen_registros.groupby("CANTO").agg(cantidad_registros_presencia = ("gbifID","count"))
     asp_registros = asp_registros.reset_index() # para convertir la serie a dataframe
 
+    asp_registros2 = asp_contienen_registros2.groupby("PROV").agg(cantidad_registros_presencia2 = ("gbifID","count"))
+    asp_registros2 = asp_registros2.reset_index() # para convertir la serie a dataframe
 
     #
     # SALIDAS
@@ -93,17 +96,20 @@ if archivo_registros_presencia is not None:
         registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['stateProvince']).count().eventDate)
         registros_presencia_grp_anio.columns = ['registros_presencia']
 
+
         fig = px.bar(registros_presencia_grp_anio, 
+                    orientation="v",
                     labels={'stateProvince':'Provincia', 'value':'Registros de presencia'})
         st.plotly_chart(fig)
 
     with col1:
         # Gráficos de histor
         st.header('Historial de')
-        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['locality']).count().eventDate)
+        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(asp['NCANTON']).count().eventDate)
         registros_presencia_grp_anio.columns = ['registros_presencia']
 
         fig = px.bar(registros_presencia_grp_anio, 
+                    orientation="v",
                     labels={'eventDate':'Año', 'value':'Registros de presencia'})
         st.plotly_chart(fig)
 
@@ -113,14 +119,15 @@ if archivo_registros_presencia is not None:
         # Mapa de calor y de registros agrupados
         st.header('Mapa de calor y de registros agrupados')
         # Capa base
-        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
-        folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain').add_to(m)
+        m = folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain', zoom_start=8)
+        folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter').add_to(m)
         # Control de capas
         folium.LayerControl().add_to(m)    
         # Despliegue del mapa
         folium_static(m)
 
-        # Capa de calor
+    with col1:
+        # Mapa de calor
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
 
         HeatMap(data=registros_presencia[['decimalLatitude', 'decimalLongitude']],
@@ -139,16 +146,16 @@ if archivo_registros_presencia is not None:
         # Despliegue del mapa
         folium_static(m)
 
-
-        # Capa de coropletas
+    with col1:
+        # Mapa de coropletas
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
         folium.Choropleth(
             name="Cantidad de registros en ASP",
             geo_data=asp,
-            data=asp_registros,
-            columns=['codigo', 'cantidad_registros_presencia'],
+            data=asp_registros2,
+            columns=["PROV", 'cantidad_registros_presencia2'],
             bins=8,
-            key_on='feature.properties.codigo',
+            key_on='feature.properties.PROV',
             fill_color='Reds', 
             fill_opacity=0.5, 
             line_opacity=1,
@@ -160,16 +167,16 @@ if archivo_registros_presencia is not None:
         folium_static(m)
 
 
-
-        # Capa de coropletas numero 2
+    with col1:
+        # Mapa de coropletas numero 2
         m = folium.Map(location=[9.6, -84.2], tiles='CartoDB positron', zoom_start=8)
         folium.Choropleth(
             name="Cantidad de registros en ASP",
             geo_data=asp,
             data=asp_registros,
-            columns=['codigo', 'cantidad_registros_presencia'],
+            columns=['CANTO', 'cantidad_registros_presencia'],
             bins=8,
-            key_on='feature.properties.codigo',
+            key_on='feature.properties.CANTO',
             fill_color='Reds', 
             fill_opacity=0.5, 
             line_opacity=1,
