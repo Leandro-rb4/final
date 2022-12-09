@@ -90,28 +90,37 @@ if archivo_registros_presencia is not None:
     # Definición de columnas
     col1, col2 = st.columns(2)
 
-    with col1:
-        # Gráficos de historial de registros de presencia por año
-        st.header('Historial de registros por año')
-        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(registros_presencia['stateProvince']).count().eventDate)
-        registros_presencia_grp_anio.columns = ['registros_presencia']
-
-
-        fig = px.bar(registros_presencia_grp_anio, 
-                    orientation="v",
-                    labels={'stateProvince':'Provincia', 'value':'Registros de presencia'})
-        st.plotly_chart(fig)
+    # Gráficos de cantidad de registros de presencia por ASP
+    # "Join" para agregar la columna con el conteo a la capa de ASP
+    asp_registros2 = asp_registros2.join(asp.set_index('PROV'))
+    # Dataframe filtrado para usar en graficación
+    asp_registros_grafico = asp_registros2.loc[asp_registros2['cantidad_registros_presencia2'] > 0, 
+                                                            ["NPROVINCIA", "cantidad_registros_presencia2"]].sort_values("cantidad_registros_presencia2")
+    asp_registros_grafico = asp_registros_grafico.set_index('NPROVINCIA')  
 
     with col1:
-        # Gráficos de histor
-        st.header('Historial de')
-        registros_presencia_grp_anio = pd.DataFrame(registros_presencia.groupby(asp['NCANTON']).count().eventDate)
-        registros_presencia_grp_anio.columns = ['registros_presencia']
+        st.header('Cantidad de registros por ASP')
 
-        fig = px.bar(registros_presencia_grp_anio, 
-                    orientation="v",
-                    labels={'eventDate':'Año', 'value':'Registros de presencia'})
-        st.plotly_chart(fig)
+        fig = px.bar(asp_registros_grafico, 
+                    labels={'nombre_asp':'ASP', 'cantidad_registros_presencia':'Registros de presencia'})
+        st.plotly_chart(fig) 
+
+    # Gráficos de cantidad de registros de
+    # "Join" para agregar la columna con el conteo a la capa de ASP
+    asp_registros = asp_registros.join(asp.set_index('CANTO'))
+    # Dataframe filtrado para usar en graficación
+    asp_registros_grafico = asp_registros.loc[asp_registros['cantidad_registros_presencia'] > 0, 
+                                                            ["NCANTON", "cantidad_registros_presencia"]].sort_values("cantidad_registros_presencia")
+    asp_registros_grafico = asp_registros_grafico.set_index('NCANTON')  
+
+    with col1:
+        st.header('Cantidad de registros po')
+
+        fig = px.bar(asp_registros_grafico, 
+                    labels={'nombre_asp':'ASP', 'cantidad_registros_presencia':'Registros de presencia'})
+        st.plotly_chart(fig) 
+
+
 
 
 
