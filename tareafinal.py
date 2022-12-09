@@ -26,6 +26,7 @@ import math
 st.set_page_config(layout='wide')
 
 
+
 #
 # TÍTULO Y DESCRIPCIÓN DE LA APLICACIÓN
 #
@@ -116,7 +117,7 @@ if archivo_registros_presencia is not None:
                                                             ["NCANTON", "cantidad_registros_presencia"]].sort_values("cantidad_registros_presencia")
     asp_registros_grafico = asp_registros_grafico.set_index('NCANTON')  
 
-    with col2:
+    with col1:
         st.header('Cantidad de registros po')
 
         fig = px.bar(asp_registros_grafico, 
