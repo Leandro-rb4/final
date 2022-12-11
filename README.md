@@ -2,7 +2,7 @@
 
 ## Alumno: Oscar Leandro Rodríguez Bolaños
 
-Los datos sobre felinos adjuntos en el repositorio provienen del [portal de la Infraestructura Mundial de Información en Biodiversidad (GBIF)] (https://www.gbif.org/occurrence/search).
+Los datos sobre felinos adjuntos en el repositorio provienen del [portal de la Infraestructura Mundial de Información en Biodiversidad (GBIF)](https://www.gbif.org/occurrence/search).
 
 El archivo de cantones utilizados en el proyecto se obtuvieron del [SNIT]( https://www.snitcr.go.cr/ico_servicios_ogc_info?k=bm9kbzo6MjY=&nombre=IGN%20Cartograf%C3%ADa%201:5mil).
 
