@@ -33,6 +33,8 @@ st.set_page_config(layout='wide')
 
 st.title('Analisis de especies')
 st.markdown('Alumno: Oscar Leandro Rodríguez Bolaños')
+st.markdown('El usuario debe seleccionar un archivo CSV basado en el DwC y posteriormente elegir una de las especies con datos contenidos en el archivo. ')
+st.markdown('La aplicación muestra un conjunto de tablas, gráficos y mapas correspondientes a la distribución de la especie en el tiempo y en el espacio.')
 
 # Carga de datos
 archivo_registros_presencia = st.sidebar.file_uploader('Seleccione un archivo CSV que siga el estándar DwC')
@@ -47,8 +49,8 @@ if archivo_registros_presencia is not None:
                                                                        registros_presencia.decimalLatitude),
                                            crs='EPSG:4326')
 
-    # Carga de polígonos de ASP
-    asp = gpd.read_file("datos/cantones.geojson")
+    # Carga de polígonos de cantones
+    cant = gpd.read_file("datos/cantones.geojson")
 
     # Limpieza de datos
     # Eliminación de registros con valores nulos en la columna 'species'
@@ -70,58 +72,59 @@ if archivo_registros_presencia is not None:
     # Filtrado
     registros_presencia = registros_presencia[registros_presencia['species'] == filtro_especie]
 
-    # Cálculo de la cantidad de registros en ASP
+    # Cálculo de la cantidad de registros en cantones y provincias
     # "Join" espacial de las capas de ASP y registros de presencia
-    asp_contienen_registros = asp.sjoin(registros_presencia, how="left", predicate="contains")
-    asp_contienen_registros2 = asp.sjoin(registros_presencia, how="left", predicate="contains")
-    # Conteo de registros de presencia en cada ASP
-    asp_registros = asp_contienen_registros.groupby("CANTO").agg(cantidad_registros_presencia = ("gbifID","count"))
-    asp_registros = asp_registros.reset_index() # para convertir la serie a dataframe
+    cant_contienen_registros = cant.sjoin(registros_presencia, how="left", predicate="contains")
+    cant_contienen_registros2 = cant.sjoin(registros_presencia, how="left", predicate="contains")
+   
+    # Conteo de registros de presencia en cada canton y provincia
+    cant_registros = cant_contienen_registros.groupby("CANTO").agg(cantidad_registros_presencia = ("gbifID","count"))
+    cant_registros = cant_registros.reset_index() # para convertir la serie a dataframe
 
-    asp_registros2 = asp_contienen_registros2.groupby("PROV").agg(cantidad_registros_presencia2 = ("gbifID","count"))
-    asp_registros2 = asp_registros2.reset_index() # para convertir la serie a dataframe
+    cant_registros2 = cant_contienen_registros2.groupby("PROV").agg(cantidad_registros_presencia2 = ("gbifID","count"))
+    cant_registros2 = cant_registros2.reset_index() # para convertir la serie a dataframe
 
     #
     # SALIDAS
     #
 
     # Tabla de registros de presencia
-    st.header('Registros de presencia')
+    st.header('Tabla de registros de presencia de especies')
     st.dataframe(registros_presencia[['species', 'stateProvince', 'locality','eventDate']].rename(columns = {'species':'Especie', 'stateProvince':'Provincia', 'locality':'Localidad', 'eventDate':'Fecha'}))
 
 
     # Definición de columnas
     col1, col2 = st.columns(2)
 
-    # Gráficos de cantidad de registros de presencia por ASP
-    # "Join" para agregar la columna con el conteo a la capa de ASP
-    asp_registros2 = asp_registros2.join(asp.set_index('PROV'))
+    # Gráficos de cantidad de registros de presencia por provincia
+    # "Join" para agregar la columna con el conteo a la capa de cantones
+    cant_registros2 = cant_registros2.join(cant.set_index('PROV'))
     # Dataframe filtrado para usar en graficación
-    asp_registros_grafico = asp_registros2.loc[asp_registros2['cantidad_registros_presencia2'] > 0, 
+    cant_registros_grafico = cant_registros2.loc[cant_registros2['cantidad_registros_presencia2'] > 0, 
                                                             ["NPROVINCIA", "cantidad_registros_presencia2"]].sort_values("cantidad_registros_presencia2")
-    asp_registros_grafico = asp_registros_grafico.set_index('NPROVINCIA')  
+    cant_registros_grafico = cant_registros_grafico.set_index('NPROVINCIA')  
 
     with col1:
-        st.header('Cantidad de registros por ASP')
+        st.header('Cantidad de registros por provincia')
 
-        fig = px.bar(asp_registros_grafico, 
+        fig = px.bar(cant_registros_grafico, 
                     labels={'NPROVINCIA':'Provincia', 'cantidad_registros_presencia2':'Registros de presencia'})
         st.plotly_chart(fig) 
 
 
-    # Gráficos de cantidad de registros de
-    # "Join" para agregar la columna con el conteo a la capa de ASP
-    asp_registros = asp_registros.join(asp.set_index('CANTO'))
+    # Gráficos de cantidad de registros de presencia por canton
+    # "Join" para agregar la columna con el conteo a la capa de cantones
+    cant_registros = cant_registros.join(cant.set_index('CANTO'))
     # Dataframe filtrado para usar en graficación
-    asp_registros_grafico = asp_registros.loc[asp_registros['cantidad_registros_presencia'] > 0, 
+    cant_registros_grafico = cant_registros.loc[cant_registros['cantidad_registros_presencia'] > 0, 
                                                             ["NCANTON", "cantidad_registros_presencia"]].sort_values("cantidad_registros_presencia")
-    asp_registros_grafico = asp_registros_grafico.set_index('NCANTON')  
+    cant_registros_grafico = cant_registros_grafico.set_index('NCANTON')  
 
     with col1:
-        st.header('Cantidad de registros po')
+        st.header('Cantidad de registros por cantón')
 
-        fig = px.bar(asp_registros_grafico, 
-                    labels={'nombre_asp':'ASP', 'cantidad_registros_presencia':'Registros de presencia'})
+        fig = px.bar(cant_registros_grafico, 
+                    labels={'NCANTON':'Cantón', 'cantidad_registros_presencia':'Registros de presencia'})
         st.plotly_chart(fig) 
 
 
@@ -130,18 +133,19 @@ if archivo_registros_presencia is not None:
 
 
         # Mapa de calor y de registros agrupados
-        st.header('Mapa de calor y de registros agrupados')
-        # Capa base
-        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=8)
+        st.header('Mapa')
+        st.markdown('El mapa incluye dos capas base, una capa cantonal, un mapa de calor, un mapa de registros agrupados y dos mapas de coropletas, todos incluidos dentro de un control de capas donde se puede elegir cual o cuales capas se visualizan')
+        # Capas bases
+        m = folium.Map(location=[9.6, -84.2], tiles='CartoDB dark_matter', zoom_start=7)
         folium.TileLayer(tiles='CartoDB positron', zoom_start=8).add_to(m)
 
         folium.Map(location=[9.6, -84.2], tiles='Stamen Terrain', zoom_start=8).add_to(m)
 
-
+        # Capa de calor cantones
         HeatMap(data=registros_presencia[['decimalLatitude', 'decimalLongitude']],
                 name='Mapa de calor').add_to(m)
-        # Capa de ASP
-        folium.GeoJson(data=asp, name='asp').add_to(m)
+        # Capa de cantones
+        folium.GeoJson(data=cant, name='Cantones').add_to(m)
         # Capa de registros de presencia agrupados
         mc = MarkerCluster(name='Registros agrupados')
         for idx, row in registros_presencia.iterrows():
@@ -158,27 +162,29 @@ if archivo_registros_presencia is not None:
     # Mapa de coropletas
     folium.Choropleth(
         name="Cantidad de registros en provincias",
-        geo_data=asp,
-        data=asp_registros2,
+        geo_data=cant,
+        data=cant_registros2,
         columns=["PROV", 'cantidad_registros_presencia2'],
         bins=8,
         key_on='feature.properties.PROV',
         fill_color='Reds', 
         fill_opacity=0.5, 
         line_opacity=1,
-        legend_name='Cantidad de registros de presencia').add_to(m)
+        legend_name='Cantidad de registros en provincias', 
+        show = False).add_to(m)
     # Mapa de coropletas numero 2
     folium.Choropleth(
-        name="Cantidad de registro",
-        geo_data=asp,
-        data=asp_registros,
+        name="Cantidad de registros en cantones",
+        geo_data=cant,
+        data=cant_registros,
         columns=['CANTO', 'cantidad_registros_presencia'],
         bins=8,
         key_on='feature.properties.CANTO',
         fill_color='Reds', 
         fill_opacity=0.5, 
         line_opacity=1,
-        legend_name='Cantidad de registros en cantones').add_to(m)
+        legend_name='Cantidad de registros en cantones', 
+        show = False).add_to(m)
     # Control de capas
     folium.LayerControl().add_to(m)    
     # Despliegue del mapa
